@@ -1,6 +1,6 @@
 # SimpliCI
 
-**An AI-Based Intelligent Platform for Simplifying Complex Information**
+**An AI-Based Intelligent Platform for Simplifying Complex Information*
 
 CSE 4104 Software Development III | Northern University of Business and Technology, Khulna
 Instructor: Md. Riaz Mahmud, Assistant Professor, Department of CSE
