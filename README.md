@@ -53,7 +53,7 @@ SimpliCI explains documents. It does not give medical, legal or financial advice
 - [ ] W7 Privacy controls: delete document and data
 - [ ] W8 AI quality analytics for admins
 
-**Stretch (one, decided at Week 09):** multi-document search with pgvector RAG, or quiz and viva practice.
+**Stretch (one, decided at Week 09):** multi-document search with pgvector RAG, or quiz and viva practice
 
 ## Technology Stack
 
