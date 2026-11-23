@@ -1,0 +1,25 @@
+digraph W {
+graph [rankdir=LR, nodesep=0.35, ranksep=0.5, pad=0.4, fontname="Helvetica", labelloc=t, labeljust=l, label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2"><TR><TD ALIGN="LEFT"><FONT COLOR="#0B3D91" POINT-SIZE="20"><B>AI Integration Workflow: SimpliCI</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT COLOR="#6B7280" POINT-SIZE="10">User input to backend API to Gemini API to generated response to frontend display, for the two AI features. Violet = AI service, amber = evidence verification.</FONT></TD></TR></TABLE>>];
+node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", margin="0.14,0.08"];
+edge [fontname="Helvetica-Oblique", fontsize=9, color="#374151", arrowsize=0.8];
+subgraph cluster_b { label=<<B>B. Chat workflow (grounded question answering)</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+b1 [fillcolor="#E8F0FE", color="#0B3D91", label="User question\nabout one document"];
+b2 [fillcolor="#F3F4F6", color="#6B7280", label="React frontend\nPOST /documents/:id/chat"];
+b3 [fillcolor="#F3F4F6", color="#6B7280", label="Backend API\nselect the most relevant\npages of the document"];
+b4 [fillcolor="#EDE9FE", color="#6D28D9", label="Gemini API\nanswers only from these pages,\nreturns citations and an\nevidence quote (JSON)"];
+"b5" [fillcolor="#FFF4D6", color="#B45309", label="Evidence verifier\nquote must exist on the\ncited page, else unverified\nor not found"];
+b6 [fillcolor="#F3F4F6", color="#6B7280", label="Backend\nsave in chat history"];
+b7 [fillcolor="#E7F6EC", color="#15803D", label="Frontend display\nanswer, page citations,\nverified badge or warning"];
+b1 -> b2 -> b3 -> b4 -> b5 -> b6 -> b7;
+}
+subgraph cluster_a { label=<<B>A. Simplification workflow</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+a1 [fillcolor="#E8F0FE", color="#0B3D91", label="User input\nPDF, image or pasted text,\ndomain, language, level"];
+a2 [fillcolor="#F3F4F6", color="#6B7280", label="React frontend\nPOST /documents\nPOST /documents/:id/simplifications"];
+a3 [fillcolor="#F3F4F6", color="#6B7280", label="Backend API\nvalidate and store file,\nextract text page by page\n(vision for scanned pages)"];
+a4 [fillcolor="#F3F4F6", color="#6B7280", label="Prompt builder\ndomain preset + language\n+ level + JSON schema"];
+a5 [fillcolor="#EDE9FE", color="#6D28D9", label="Gemini API\nrewrites in simple words,\nreturns structured JSON"];
+a6 [fillcolor="#F3F4F6", color="#6B7280", label="Backend validation\nschema check, one retry,\nsave with model and prompt version"];
+a7 [fillcolor="#E7F6EC", color="#15803D", label="Frontend display\nsummary, explanation, glossary,\naction items, Smart Alerts"];
+a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> a7;
+}
+}

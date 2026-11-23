@@ -1,0 +1,108 @@
+// SimpliCI database schema (Week 04 version) for dbdiagram.io
+// Team CSE4104-7D-T01. Paste into https://dbdiagram.io to see the ER diagram.
+// All parent to child references use ON DELETE CASCADE.
+
+Enum user_role { user admin }
+Enum lang { bn en }
+Enum reading_level { beginner university }
+Enum domain { academic medical policy }
+Enum source_type { pdf image text }
+Enum doc_status { uploaded processing ready failed }
+Enum extraction_method { text vision }
+Enum chat_role { user assistant }
+Enum verification_status { verified unverified not_found }
+
+Table users {
+  id uuid [pk]
+  name varchar [not null]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  role user_role [not null, default: 'user']
+  preferred_language lang [default: 'en']
+  default_level reading_level [default: 'beginner']
+  is_active boolean [default: true]
+  created_at timestamp
+  last_login_at timestamp
+}
+
+Table documents {
+  id uuid [pk]
+  user_id uuid [not null, ref: > users.id]
+  title varchar
+  source_type source_type [not null]
+  domain domain [not null]
+  original_filename varchar
+  storage_path varchar
+  page_count int
+  status doc_status [default: 'uploaded']
+  created_at timestamp
+  indexes { (user_id, created_at) }
+}
+
+Table document_pages {
+  id uuid [pk]
+  document_id uuid [not null, ref: > documents.id]
+  page_number int [not null]
+  text_content text
+  extraction_method extraction_method
+  created_at timestamp
+  indexes { (document_id, page_number) [unique] }
+}
+
+Table simplifications {
+  id uuid [pk]
+  document_id uuid [not null, ref: > documents.id]
+  language lang [not null]
+  reading_level reading_level [not null]
+  domain domain [not null]
+  summary text
+  explanation text
+  glossary jsonb
+  action_items jsonb
+  alerts jsonb
+  model_name varchar
+  prompt_version varchar
+  input_tokens int
+  output_tokens int
+  response_ms int
+  status doc_status
+  created_at timestamp
+  indexes { (document_id, language, reading_level, domain) }
+}
+
+Table chat_messages {
+  id uuid [pk]
+  document_id uuid [not null, ref: > documents.id]
+  user_id uuid [not null, ref: > users.id]
+  role chat_role [not null]
+  content text [not null]
+  citations jsonb
+  evidence_quote text
+  verification_status verification_status
+  model_name varchar
+  prompt_version varchar
+  tokens_used int
+  response_ms int
+  created_at timestamp
+  indexes { (document_id, created_at) }
+}
+
+Table feedback {
+  id uuid [pk]
+  user_id uuid [not null, ref: > users.id]
+  simplification_id uuid [ref: > simplifications.id, note: 'nullable; exactly one of simplification_id or chat_message_id is set']
+  chat_message_id uuid [ref: > chat_messages.id, note: 'nullable']
+  rating smallint [not null, note: 'CHECK rating IN (1, -1)']
+  comment text
+  created_at timestamp
+}
+
+Table share_links {
+  id uuid [pk]
+  simplification_id uuid [not null, ref: > simplifications.id]
+  created_by uuid [not null, ref: > users.id]
+  token varchar [unique, not null]
+  expires_at timestamp [not null]
+  is_revoked boolean [default: false]
+  created_at timestamp
+}

@@ -1,0 +1,49 @@
+digraph ARCH {
+graph [rankdir=TB, compound=true, nodesep=0.35, ranksep=0.7, pad=0.4, splines=true, fontname="Helvetica", fontsize=12, labelloc=t, labeljust=l, label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2"><TR><TD ALIGN="LEFT"><FONT COLOR="#0B3D91" POINT-SIZE="22"><B>System Architecture Diagram: SimpliCI (Week 04 system design)</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT COLOR="#6B7280" POINT-SIZE="10">Frontend to Backend API to Database, with the backend calling the AI service. All REST endpoints are under /api/v1 and described in the API Structure document.</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Upload and simplify flow:</B> 1 browser sends file (POST /documents) | 2 gateway checks JWT, role and input | 3 file saved in private storage | 4 text extracted page by page | 5 POST /documents/:id/simplifications | 6 prompt sent to Gemini | 7 JSON validated and saved | 8 result shown.</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Chat flow:</B> 1 POST /documents/:id/chat | 2 relevant pages selected | 3 Gemini answers from those pages with an evidence quote | 4 evidence verifier checks the quote against the page text | 5 answer, citations and verified or warning label saved and returned.</FONT></TD></TR></TABLE>>];
+node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.16,0.09", fillcolor="#E8F0FE", color="#0B3D91"];
+edge [fontname="Helvetica-Oblique", fontsize=9, color="#0B3D91", arrowsize=0.8];
+users [label=<<B>End users</B><BR/><FONT POINT-SIZE="9">Guest, User, Admin<BR/>in a web browser</FONT>>, fillcolor="#F3F4F6", color="#6B7280"];
+subgraph cluster_fe { label=<<B>Frontend (Vercel)</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+spa [label=<<B>React SPA (Vite)</B><BR/><FONT POINT-SIZE="9">pages: auth, dashboard, upload, result,<BR/>chat, history, admin</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+ui [label=<<B>UI layer</B><BR/><FONT POINT-SIZE="9">Tailwind CSS, react-pdf split view,<BR/>Recharts, speech synthesis</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+client [label=<<B>API client</B><BR/><FONT POINT-SIZE="9">JWT auth store, route guards,<BR/>loading and error states</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+{rank=same; spa; ui; client}
+}
+subgraph cluster_be { label=<<B>Backend (Render): Node.js + Express REST API  /api/v1</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+gateway [label=<<B>API gateway layer</B><BR/><FONT POINT-SIZE="9">Helmet, CORS, rate limit,<BR/>Zod validation, JWT check, role guard</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+subgraph cluster_routes { label=<<I>Route modules</I>>; style="rounded"; color="#9CA3AF"; fontname="Helvetica"; fontsize=10;
+auth [label=<<B>Auth and users</B><BR/><FONT POINT-SIZE="9">/auth  /users</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+docs [label=<<B>Documents</B><BR/><FONT POINT-SIZE="9">/documents</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+simp [label=<<B>Simplifications</B><BR/><FONT POINT-SIZE="9">/simplifications</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+chat [label=<<B>Chat</B><BR/><FONT POINT-SIZE="9">/documents/:id/chat</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+fb [label=<<B>Feedback</B><BR/><FONT POINT-SIZE="9">/feedback</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+share [label=<<B>Sharing</B><BR/><FONT POINT-SIZE="9">/share-links  /shared</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+admin [label=<<B>Admin</B><BR/><FONT POINT-SIZE="9">/admin</FONT>>, fillcolor="#E7F6EC", color="#15803D"];
+{rank=same; auth; docs; simp; chat; fb; share; admin}
+}
+subgraph cluster_svc { label=<<I>Service layer</I>>; style="rounded"; color="#9CA3AF"; fontname="Helvetica"; fontsize=10;
+extract [label=<<B>Extraction service</B><BR/><FONT POINT-SIZE="9">page-wise text, vision<BR/>for scanned pages</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+ai [label=<<B>AI service</B><BR/><FONT POINT-SIZE="9">prompt builder, Gemini client,<BR/>JSON schema validation</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+verify [label=<<B>Evidence verifier</B><BR/><FONT POINT-SIZE="9">quote must exist on cited page</FONT>>, fillcolor="#FFF4D6", color="#B45309"];
+export [label=<<B>Export and share service</B><BR/><FONT POINT-SIZE="9">PDF export, expiring links</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+{rank=same; extract; ai; verify; export}
+}
+dal [label=<<B>Data access layer</B><BR/><FONT POINT-SIZE="9">pg and Supabase client</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+}
+subgraph cluster_data { label=<<B>Supabase</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+db [label=<<B>PostgreSQL</B><BR/><FONT POINT-SIZE="9">users, documents, document_pages,<BR/>simplifications, chat_messages,<BR/>feedback, share_links</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+store [label=<<B>Private storage</B><BR/><FONT POINT-SIZE="9">uploaded PDFs and images,<BR/>signed URLs</FONT>>, fillcolor="#E8F0FE", color="#0B3D91"];
+{rank=same; db; store}
+}
+subgraph cluster_ai { label=<<B>Google AI</B>>; style="dashed,rounded"; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+gemini [label=<<B>Gemini API</B><BR/><FONT POINT-SIZE="9">text generation, structured JSON,<BR/>vision for scans</FONT>>, fillcolor="#EDE9FE", color="#6D28D9"];
+}
+users -> spa [dir=both, label="HTTPS"];
+client -> gateway [dir=both, label="HTTPS REST\n(JSON, JWT)"];
+gateway -> docs [lhead=cluster_routes];
+docs -> extract [ltail=cluster_routes, lhead=cluster_svc];
+extract -> dal [ltail=cluster_svc];
+ai -> gemini [dir=both, label="HTTPS API call", color="#6D28D9"];
+dal -> db [dir=both, label="SQL over TLS"];
+dal -> store [dir=both, label="signed URLs"];
+}

@@ -1,0 +1,38 @@
+digraph UC {
+graph [rankdir=LR, splines=true, nodesep=0.28, ranksep=1.2, pad=0.4, fontname="Helvetica", labelloc=t, labeljust=l, label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2"><TR><TD ALIGN="LEFT"><FONT COLOR="#0B3D91" POINT-SIZE="22"><B>Updated Use Case Diagram: SimpliCI (Week 04)</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT COLOR="#6B7280" POINT-SIZE="10">Shows the 20 use cases UC-01 to UC-20 of the SRS (Week 03) with the same names and IDs, all actors and the AI-related interactions. A User can do everything a Guest can (hollow arrow). Dashed arrows: include or extend.</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">Violet = use cases where the Gemini AI Service is involved (UC-04, UC-06, UC-19), amber = evidence verification by the backend (UC-20), green = admin functions, grey = included or extending use cases. Feedback (UC-08) applies to results and to chat answers.</FONT></TD></TR></TABLE>>, imagepath="."];
+node [fontname="Helvetica", fontsize=10];
+edge [fontname="Helvetica-Oblique", fontsize=9, color="#0B3D91", arrowhead=none];
+node [shape=none, image="actor.png", imagescale=false, label="", labelloc=b];
+guest [label="Guest"]; user [label="User"]; admin [label="Admin"]; gemini [label="Gemini AI\nService"];
+subgraph cluster_sys { label=<<B>SimpliCI Platform (system boundary)</B>>; labeljust=l; style=dashed; color="#6B7280"; fontname="Helvetica"; fontsize=11;
+node [shape=ellipse, style=filled, image="", fillcolor="#E8F0FE", color="#0B3D91", labelloc=c, margin="0.12,0.06"];
+uc01 [label="UC-01 Register Account", fillcolor="#E8F0FE", color="#0B3D91"];
+uc02 [label="UC-02 Login", fillcolor="#E8F0FE", color="#0B3D91"];
+uc11 [label="UC-11 View Shared Result", fillcolor="#E8F0FE", color="#0B3D91"];
+uc03 [label="UC-03 Upload or Paste Document", fillcolor="#E8F0FE", color="#0B3D91"];
+uc04 [label="UC-04 Simplify Document", fillcolor="#EDE9FE", color="#6D28D9"];
+uc05 [label="UC-05 View Simplified Result", fillcolor="#E8F0FE", color="#0B3D91"];
+uc06 [label="UC-06 Chat with Document", fillcolor="#EDE9FE", color="#6D28D9"];
+uc07 [label="UC-07 View History", fillcolor="#E8F0FE", color="#0B3D91"];
+uc13 [label="UC-13 Manage Profile and Settings", fillcolor="#E8F0FE", color="#0B3D91"];
+uc14 [label="UC-14 Delete Document or Account", fillcolor="#E8F0FE", color="#0B3D91"];
+uc18 [label="UC-18 Validate File Type and Size", fillcolor="#F3F4F6", color="#6B7280"];
+uc19 [label="UC-19 Extract Text Page by Page", fillcolor="#EDE9FE", color="#6D28D9"];
+uc20 [label="UC-20 Verify Evidence Against Source", fillcolor="#FFF4D6", color="#B45309"];
+uc12 [label="UC-12 Read Aloud", fillcolor="#F3F4F6", color="#6B7280"];
+uc09 [label="UC-09 Export Result as PDF", fillcolor="#F3F4F6", color="#6B7280"];
+uc10 [label="UC-10 Share Result by Link", fillcolor="#F3F4F6", color="#6B7280"];
+uc08 [label="UC-08 Give Feedback\n(Thumbs Up or Down)", fillcolor="#F3F4F6", color="#6B7280"];
+uc15 [label="UC-15 View Admin Dashboard", fillcolor="#E7F6EC", color="#15803D"];
+uc16 [label="UC-16 Manage Users", fillcolor="#E7F6EC", color="#15803D"];
+uc17 [label="UC-17 Review Feedback and AI Quality", fillcolor="#E7F6EC", color="#15803D"];
+}
+{rank=max; admin; gemini}
+guest -> uc01; guest -> uc02; guest -> uc11;
+user -> uc03; user -> uc04; user -> uc05; user -> uc06; user -> uc07; user -> uc13; user -> uc14;
+user -> guest [arrowhead=empty, constraint=false];
+uc15 -> admin; uc16 -> admin; uc17 -> admin;
+uc04 -> gemini [color="#6D28D9", label="structured JSON output"]; uc06 -> gemini [color="#6D28D9", label="grounded answer and evidence quote"]; uc19 -> gemini [color="#6D28D9", label="vision for scanned pages"];
+uc03 -> uc18 [style=dashed, arrowhead=vee, label="«include»"]; uc04 -> uc19 [style=dashed, arrowhead=vee, label="«include»"]; uc06 -> uc20 [style=dashed, arrowhead=vee, label="«include»"];
+uc05 -> uc12 [style=dashed, dir=back, arrowtail=vee, arrowhead=none, label="«extend»"]; uc05 -> uc09 [style=dashed, dir=back, arrowtail=vee, arrowhead=none, label="«extend»"]; uc05 -> uc10 [style=dashed, dir=back, arrowtail=vee, arrowhead=none, label="«extend»"]; uc05 -> uc08 [style=dashed, dir=back, arrowtail=vee, arrowhead=none, label="«extend»"]; uc06 -> uc08 [style=dashed, dir=back, arrowtail=vee, arrowhead=none, label="«extend»"];
+}

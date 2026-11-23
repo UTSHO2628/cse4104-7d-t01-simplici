@@ -2,10 +2,10 @@
 
 **An AI-Based Intelligent Platform for Simplifying Complex Information**
 
-CSE 4104 Software Development III | Northern University of Business and Technology, Khulna
+CSE 4104 Software Development III | Northern University of Business and Technology, Khulna  
 Instructor: Md. Riaz Mahmud, Assistant Professor, Department of CSE
 
-> Status: Week 02, proposal and planning phase. Code scaffolding starts in Week 06.
+> Status: Week 04 (system design done: architecture, ER diagram, use case, activity diagrams, API design, AI workflow). Code scaffolding starts in Week 06.
 
 ## Team Information
 
@@ -31,7 +31,17 @@ SimpliCI lets a user upload a PDF or image, or paste text. The AI converts it in
 
 SimpliCI explains documents. It does not give medical, legal or financial advice. Only dummy documents are used for development and testing.
 
-## Proposed Features
+## Objectives
+
+- Simplify PDF files, images and pasted text into Bangla or English at a selectable reading level
+- Provide domain-aware simplification for Academic, Medical Report and Policy or Notice documents
+- Answer questions only from the uploaded document, with page citations and a clear "not found" response
+- Reduce made-up answers by checking the AI's quoted evidence against the source text
+- Help users act on a document by extracting deadlines, amounts, obligations and warnings
+- Collect feedback and give admins visibility into usage and AI quality
+- Deliver a complete, tested, deployed and documented system within one semester
+
+## Features
 
 **Core platform (MVP)**
 - [ ] F1 Registration and login (JWT, bcrypt), roles: User and Admin
@@ -53,7 +63,7 @@ SimpliCI explains documents. It does not give medical, legal or financial advice
 - [ ] W7 Privacy controls: delete document and data
 - [ ] W8 AI quality analytics for admins
 
-**Stretch (one, decided at Week 09):** multi-document search with pgvector RAG, or quiz and viva practice
+**Stretch (one, decided at Week 09):** multi-document search with pgvector RAG, or quiz and viva practice.
 
 ## Technology Stack
 
@@ -80,14 +90,41 @@ flowchart LR
   G --> H[React UI]
 ```
 
-## Project Structure
+## Documentation
+
+| Week | Document | Location |
+|---|---|---|
+| 02 | Proposal, Team Information Sheet, Project Plan | `documentation/week-02/` |
+| 03 | SRS, Use Case Diagram, ER Diagram, Architecture Diagram | `documentation/week-03/` |
+| 04 | System Design Document, API Structure | `documentation/week-04/` |
+| 04 | Individual diagrams (architecture, ER, use case, activity, AI workflow) | `diagrams/` |
+
+Editable diagram sources are in `documentation/week-03/diagram-sources/` (draw.io, DBML) and `diagrams/sources/` (Graphviz DOT). The database schema for dbdiagram.io is in `database/schema.dbml`.
+
+## API Overview
+
+REST API under `/api/v1`, JWT in the `Authorization: Bearer` header. Full specification: `documentation/week-04/CSE4104-7D-T01_APIStructure.pdf`. Design overview: `documentation/week-04/CSE4104-7D-T01_SystemDesign.pdf`.
+
+| Group | Endpoints |
+|---|---|
+| Auth and profile | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET/PATCH/DELETE /users/me`, `POST /users/me/password` |
+| Documents | `POST /documents`, `GET /documents`, `GET/DELETE /documents/:id`, `GET /documents/:id/pages`, `GET /documents/:id/file` |
+| Simplification | `POST/GET /documents/:id/simplifications`, `GET /simplifications/:id`, `GET /simplifications/:id/export` |
+| Chat | `POST/GET/DELETE /documents/:id/chat` |
+| Feedback | `POST /feedback` |
+| Sharing | `POST/GET /simplifications/:id/share-links`, `DELETE /share-links/:id`, `GET /shared/:token` |
+| Admin | `GET /admin/stats`, `/admin/feedback/summary`, `/admin/ai-quality`, `/admin/feedback`, `/admin/users`, `PATCH /admin/users/:id` |
+| System | `GET /health` |
+
+## Repository Structure
 
 ```
 frontend/        React (Vite) application
 backend/         Node.js and Express API
 ai/              Prompt templates and JSON schemas
-database/        Schema, migrations, seed data
-documentation/   Proposal, SRS, design, reports
+database/        Schema (schema.dbml), migrations, seed data
+documentation/   Weekly documents (week-02, week-03, week-04, ...)
+diagrams/        Architecture, ER, use case, activity and AI workflow diagrams (PDF and sources)
 screenshots/     UI screenshots for README and reports
 presentation/    Slides and demo material
 testing/         Test cases, Postman collection, AI test set
@@ -112,7 +149,7 @@ npm install && npm run dev
 
 Never commit `.env` files or API keys.
 
-## Deployment Link-
+## Deployment Link
 
 To be added in Week 11.
 
